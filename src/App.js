@@ -29,7 +29,28 @@ export default class App extends PureComponent {
           </tr>
         </table>
         <br></br>
-        <div class="container">
+        <TaskForm />
+      </div>
+    );
+  }
+}
+
+class Task extends React.Component {
+  render() {
+     return "" 
+  }
+}
+
+class TaskList extends React.Component {
+  render() {
+    return ""
+  }
+}
+
+class TaskForm extends React.Component {
+  render() {
+    return (
+      <div class="container">
         <form>
           <div class="form-group">
             <label for="nameOfTask">Task Name</label>
@@ -58,19 +79,6 @@ export default class App extends PureComponent {
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         </div>
-      </div>
     );
-  }
-}
-
-class Task extends React.Component {
-  render() {
-     return "" 
-  }
-}
-
-class TaskList extends React.Component {
-  render() {
-    return ""
   }
 }
