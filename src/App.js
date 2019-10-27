@@ -12,21 +12,20 @@ export default class App extends PureComponent {
     return (
       <div>
         <Header />
-        <table>
+        <table class="table">
           <tr>
-            <th>Firstname</th>
-            <th>Lastname</th>
-            <th>Age</th>
+            <th>Name</th>
+            <th>Due Date</th>
+            <th>Type</th>
+            <th>isFinished</th>
+            <th>Notes</th>
           </tr>
           <tr>
-            <td>Jill</td>
-            <td>Smith</td>
-            <td>50</td>
-          </tr>
-          <tr>
-            <td>Eve</td>
-            <td>Jackson</td>
-            <td>94</td>
+            <td>firstTask</td>
+            <td>11/1/2019</td>
+            <td>project</td>
+            <td>false</td>
+            <td>This one will take a while.</td>
           </tr>
         </table>
       </div>
