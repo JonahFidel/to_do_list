@@ -3,43 +3,53 @@ import ReactDOM from "react-dom";
 import Header from "./Header";
 
 export default class App extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      taskList: [
-        // {
-        //   firstTask: {
-        //     "name": "firstTask",
-        //     "date": "11/1/2019",
-        //     "type": "project",
-        //     "isFinished": "false",
-        //     "notes": "This one will take a while."
-        //   },
-        //   secondTask: {
-        //     "name": "firstTask",
-        //     "date": "11/1/2019",
-        //     "type": "project",
-        //     "isFinished": "false",
-        //     "notes": "This one will take a while."
-        //   },
-        //   thirdTask: {
-        //     "name": "firstTask",
-        //     "date": "11/1/2019",
-        //     "type": "project",
-        //     "isFinished": "false",
-        //     "notes": "This one will take a while."
-        //   }
-        // }
-        "shopping", "cleaning", "house work",
-      ],
-    };
+  handler(task) {
+    task.preventDefault(); // don't refresh the page upon form submit
+    const taskList = this.state.taskList;
+    let firstTask = {
+      name: "firstTask",
+      date: "12/8/1992",
+      type: "project",
+      isFinished: "false",
+      notes: "Tgreen eggs and ham."
+    }
+    this.setState({
+      taskList: taskList.concat(firstTask),
+    })
   }
 
-  handleClick() {
-    const taskList = this.state.taskList;
-    this.setState({
-      taskList: taskList.concat(["green"]),   
-    });
+  constructor(props) {
+    super(props);
+    this.handler = this.handler.bind(this);
+    let firstTask = {
+      name: "firstTask",
+      date: "12/8/1992",
+      type: "project",
+      isFinished: "false",
+      notes: "Tgreen eggs and ham."
+    }
+    let secondTask = {
+      name: "secondTask",
+      date: "11/1/2019",
+      type: "task",
+      isFinished: "false",
+      notes: "This one will take a while."
+    }
+    let thirdTask = {
+      name: "thirdTask",
+      date: "3/1/2222",
+      type: "song",
+      isFinished: "true",
+      notes: "hippopotomus."
+    }
+    this.state = {
+      taskList: [
+          firstTask,
+          secondTask,
+          thirdTask
+        // "shopping", "cleaning", "house work",
+      ],
+    };
   }
 
   render() {
@@ -47,7 +57,7 @@ export default class App extends PureComponent {
       <div>
         <Header />
         <TaskList value={this.state} />
-        <TaskForm/>
+        <TaskForm handler={this.handler}/>
       </div>
     );
   }
@@ -58,11 +68,11 @@ class Task extends React.Component {
     return (
       <tbody>
       <tr>
-            <td>firstTask</td>
-            <td>11/1/2019</td>
-            <td>project</td>
-            <td>false</td>
-            <td>This one will take a while.</td>
+            <td>{this.props.name}</td>
+            <td>{this.props.date}</td>
+            <td>{this.props.type}</td>
+            <td>{this.props.isFinished}</td>
+            <td>{this.props.notes}</td>
           </tr>
       </tbody>
      
@@ -74,8 +84,10 @@ class TaskList extends React.Component {
   render() {
     const items = [];
 
-    for (let i = 0; i < this.props.value.taskList.length; i++) {
-      items.push(<Task key={i}/>)
+    let taskList = this.props.value.taskList;
+
+    for (let i = 0; i < taskList.length; i++) {
+      items.push(<Task key={i} name={taskList[i].name} date={taskList[i].date} type={taskList[i].type} isFinished={taskList[i].isFinished} notes={taskList[i].notes}/>)
     }
     return (
       <table className="table">
@@ -101,29 +113,29 @@ class TaskForm extends React.Component {
         <form>
           <div className="form-group">
             <label htmlFor="nameOfTask">Task Name</label>
-            <input type="text" className="form-control" id="nameOfTask" placeholder="Enter a task"></input>
+            <input type="text" className="form-control" ref="nameOfTask" placeholder="Enter a task"></input>
           </div>
           <div className="form-group">
             <label htmlFor="taskDueDate">Due Date</label>
-            <input type="date" className="form-control" id="taskDueDate"></input>
+            <input type="date" className="form-control" ref="taskDueDate"></input>
           </div>
           <div className="form-group">
             <label htmlFor="taskType">Type of Task</label>
-            <input type="text" className="form-control" id="taskType" placeholder="project"></input>
+            <input type="text" className="form-control" ref="taskType" placeholder="project"></input>
           </div>
           <div className="form-group">
             <label htmlFor="isFinished">isFinished</label>
-            <input type="boolean" className="form-control" id="isFinished"></input>
+            <input type="boolean" className="form-control" ref="isFinished"></input>
           </div>
           <div className="form-group">
             <label htmlFor="notes">Notes</label>
-            <textarea type="textarea" className="form-control" id="notes"></textarea>
+            <textarea type="textarea" className="form-control" ref="notes"></textarea>
           </div>
           {/* <div class="form-check">
             <input type="checkbox" class="form-check-input" id="exampleCheck1"></input>
             <label class="form-check-label" for="exampleCheck1">Check me out</label>
           </div> */}
-          <button type="submit" className="btn btn-primary">Submit</button>
+          <button className="btn btn-primary" onClick={this.props.handler}>Submit</button>
         </form>
       </div>
     );
