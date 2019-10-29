@@ -2,40 +2,25 @@ import React, { PureComponent } from "react";
 import ReactDOM from "react-dom";
 import Header from "./Header";
 
+// const sqlite3 = require('sqlite3').verbose();
+// let db = new sqlite3.Database(':memory:', (err)=>{
+//   if (err){
+//     console.log(err.message);
+//   }
+
+//   console.log("connected to db");
+
+//   db.close((err) => {
+//     if (err){
+//       console.log(err.message);
+//     }
+
+//     console.log("closed db connection");
+//   })
+// } );
+
 export default class App extends PureComponent {
   
-  // probably should rename this
-  onClick(task) {
-    const taskList = this.state.taskList;
-    console.log(task);
-    // might want to arrange this as a dictionary
-    let newTask = {
-      name: task[0],
-      date: task[1],
-      type: task[2],
-      isFinished: task[3],
-      notes: task[4]
-    }
-    this.setState({
-      taskList: taskList.concat(newTask),
-      taskListLength: taskList.length,
-    })
-  }
-
-  removeItem(i){
-    let taskList = this.state.taskList;
-
-    // necessary because splice alters the array in place and we need to keep it immutable bc react
-    const newTaskListStart = taskList.slice(0, i);
-    const newTaskListEnd = taskList.slice(i + 1, this.state.taskListLength);
-    
-    taskList = newTaskListStart.concat(newTaskListEnd);
-    this.setState({
-      taskList: taskList, 
-      taskListLength: taskList.length,
-    })
-  }
-
   constructor(props) {
     super(props);
     this.removeItem = this.removeItem.bind(this);
@@ -67,8 +52,56 @@ export default class App extends PureComponent {
           thirdTask
         // "shopping", "cleaning", "house work",
       ],
+      apiResponse: "",
       taskListLength: 3,
     };
+  }
+
+  callAPI() {
+    fetch("http://localhost:9000/testAPI")
+        .then(res => res.text())
+        .then(res => this.setState({ apiResponse: res }));
+}
+
+componentWillMount() {
+  this.callAPI();
+}
+
+  // probably should rename this
+  onClick(task) {
+    const taskList = this.state.taskList;
+    console.log(task);
+    // might want to arrange this as a dictionary
+    let newTask = {
+      name: task[0],
+      date: task[1],
+      type: task[2],
+      isFinished: task[3],
+      notes: task[4]
+    }
+    this.setState({
+      taskList: taskList.concat(newTask),
+      taskListLength: taskList.length,
+    })
+  }
+
+
+  // TODO: Fix bug here - if you add a task and then delete the task immediately above it, two tasks get removed
+
+
+
+  removeItem(i){
+    let taskList = this.state.taskList;
+
+    // necessary because splice alters the array in place and we need to keep it immutable bc react
+    const newTaskListStart = taskList.slice(0, i);
+    const newTaskListEnd = taskList.slice(i + 1, this.state.taskListLength + 1);
+    
+    taskList = newTaskListStart.concat(newTaskListEnd);
+    this.setState({
+      taskList: taskList, 
+      taskListLength: taskList.length,
+    })
   }
 
   render() {
@@ -77,6 +110,7 @@ export default class App extends PureComponent {
         <Header />
         <TaskList action={this.removeItem} value={this.state} />
         <TaskForm onClick={this.onClick.bind(this)}/>
+        <p className="App-intro">{this.state.apiResponse}</p>
       </div>
     );
   }
@@ -107,6 +141,7 @@ class TaskList extends React.Component {
       items.push(<Task key={i} id={i} action={this.props.action} name={taskList[i].name} date={taskList[i].date} type={taskList[i].type} isFinished={taskList[i].isFinished} notes={taskList[i].notes}/>)
     }
     return (
+      // should change this to a React table 
       <table className="table">
         <tbody>
         <tr>
