@@ -1,26 +1,19 @@
 const express = require("express");
 const router = express.Router();
-
-const sqlite3 = require("sqlite3").verbose();
 const crypto = require("crypto");
 const loremIpsum = require("lorem-ipsum").LoremIpsum;
+const db = require("../db");
 
 const lorem = new loremIpsum();
-const db = new sqlite3.Database('./db/tasks.db', (err)=>{
-  if (err){
-    console.log(err.message);
-  }
-
-  console.log("connected to tasks db");
-});
 
 let tasksArray = [];
 let task;
 
+// uncomment to clear the table
 // db.run("DROP TABLE IF EXISTS Tasks_Table");
-// db.run(`DELETE FROM Tasks_Table`);
+// db.run("DELETE FROM Tasks_Table");
 
-
+// add mock data to the table
 let seedDB = () => {
     db.run("CREATE TABLE IF NOT EXISTS Tasks_Table (Task_ID varchar(255), Task_Name varchar(255), Date DATE, Task_Type varchar(255), Is_Finished varchar(255), Notes varchar(255));");
     for (var i = 0; i < 3; i++){
@@ -31,14 +24,6 @@ let seedDB = () => {
 
 // seedDB();
 
-// db.serialize(() => {
-
-//   });
-
-
-// console.log(db.run("SELECT Task_Name FROM Tasks_Table"));
-// tasksArray = [];
-
 router.get("/", function(req, res, next) {
   db.serialize(() => {
 
@@ -46,7 +31,8 @@ router.get("/", function(req, res, next) {
         if (err) {
           console.error(err.message);
         }
-      //   console.log(row.id + "\t" + row.name);
+        
+        // create task object
         task = {
             id: row.id,
             name: row.name, 
@@ -55,11 +41,14 @@ router.get("/", function(req, res, next) {
             isFinished: row.isFinished,
             notes: row.notes,
         }
+        // send tasks to the client
         tasksArray.push(task);
       });
     });
 
     res.send(tasksArray);
+
+    // clear the tasks array
     tasksArray=[];
 });
 
