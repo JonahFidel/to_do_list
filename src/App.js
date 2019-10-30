@@ -2,65 +2,59 @@ import React, { PureComponent } from "react";
 import ReactDOM from "react-dom";
 import Header from "./Header";
 
-// const sqlite3 = require('sqlite3').verbose();
-// let db = new sqlite3.Database(':memory:', (err)=>{
-//   if (err){
-//     console.log(err.message);
-//   }
-
-//   console.log("connected to db");
-
-//   db.close((err) => {
-//     if (err){
-//       console.log(err.message);
-//     }
-
-//     console.log("closed db connection");
-//   })
-// } );
-
 export default class App extends PureComponent {
   
   constructor(props) {
     super(props);
     this.removeItem = this.removeItem.bind(this);
-    let firstTask = {
-      name: "firstTask",
-      date: "12/8/1992",
-      type: "project",
-      isFinished: "false",
-      notes: "green eggs and ham."
-    }
-    let secondTask = {
-      name: "secondTask",
-      date: "11/1/2019",
-      type: "task",
-      isFinished: "false",
-      notes: "This one will take a while."
-    }
-    let thirdTask = {
-      name: "thirdTask",
-      date: "3/1/2222",
-      type: "song",
-      isFinished: "true",
-      notes: "hippopotomus."
-    }
+    // let firstTask = {
+    //   name: "firstTask",
+    //   date: "12/8/1992",
+    //   type: "project",
+    //   isFinished: "false",
+    //   notes: "green eggs and ham."
+    // }
+    // let secondTask = {
+    //   name: "secondTask",
+    //   date: "11/1/2019",
+    //   type: "task",
+    //   isFinished: "false",
+    //   notes: "This one will take a while."
+    // }
+    // let thirdTask = {
+    //   name: "thirdTask",
+    //   date: "3/1/2222",
+    //   type: "song",
+    //   isFinished: "true",
+    //   notes: "hippopotomus."
+    // }
     this.state = {
       taskList: [
-          firstTask,
-          secondTask,
-          thirdTask
+          // firstTask,
+          // secondTask,
+          // thirdTask
         // "shopping", "cleaning", "house work",
       ],
-      apiResponse: "",
       taskListLength: 3,
     };
   }
 
   callAPI() {
     fetch("http://localhost:9000/testAPI")
-        .then(res => res.text())
-        .then(res => this.setState({ apiResponse: res }));
+        .then(res => res.json())
+        .then(res => this.parseResponse(res))
+}
+
+parseResponse(res){
+  let taskList = [];
+  for(var i = 0; i < res.length; i++){
+    taskList.push(res[i])
+  }
+  console.log("hello world");
+  this.setState({
+    taskList: taskList,
+    taskListLength: taskList.length
+  })
 }
 
 componentWillMount() {
@@ -110,7 +104,7 @@ componentWillMount() {
         <Header />
         <TaskList action={this.removeItem} value={this.state} />
         <TaskForm onClick={this.onClick.bind(this)}/>
-        <p className="App-intro">{this.state.apiResponse}</p>
+        {/* <p className="App-intro">{this.state.apiResponse}</p> */}
       </div>
     );
   }
@@ -126,6 +120,7 @@ class Task extends React.Component {
             <td>{this.props.isFinished}</td>
             <td>{this.props.notes}</td>
             <td><button onClick={() => this.props.action(this.props.id)}>Remove</button></td>
+            <td><button>Edit</button></td>
           </tr>
     );
   }
