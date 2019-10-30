@@ -6,8 +6,7 @@ var logger = require('morgan');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 
-var seedAPIRouter = require('./routes/seedAPI');
-var createRouter = require('./routes/create');
+var taskRouter = require('./routes/task');
 var app = express();
 
 // view engine setup
@@ -22,8 +21,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
-app.use('/seedAPI', seedAPIRouter);
-app.use('/create', createRouter);
+app.use('/task', taskRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

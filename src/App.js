@@ -13,16 +13,16 @@ export default class App extends PureComponent {
     };
   }
 
-  // GET task list
-  callSeedAPI() {
-    fetch("http://localhost:9000/seedAPI")
+  // INDEX - task list
+  callGetTaskListAPI() {
+    fetch("http://localhost:9000/task")
       .then(res => res.json())
       .then(res => this.parseResponse(res))
   }
 
-  // POST new task
+  // CREATE - new task
   callCreateAPI(newTask) {
-    fetch('http://localhost:9000/create', {
+    fetch('http://localhost:9000/task', {
       method: 'POST',
       body: JSON.stringify({
         task: newTask
@@ -47,8 +47,8 @@ export default class App extends PureComponent {
 
   componentDidMount() {
     // the double function call is hackish but the only way I can figure out to get the db insertion to persist immediately
-    this.callSeedAPI();
-    this.callSeedAPI();
+    this.callGetTaskListAPI();
+    this.callGetTaskListAPI();
   }
 
   // this gets triggered on clicking the submit button on the form, also called to construct the task list

@@ -24,7 +24,13 @@ let seedDB = () => {
 
 // seedDB();
 
-router.get("/", function(req, res, next) {
+router.post('/', function(req, res, next) {
+  const crypto_id = crypto.randomBytes(16).toString("hex");
+  db.run("INSERT INTO Tasks_Table (Task_ID, Task_Name, Date, Task_Type, Is_Finished, Notes) VALUES ('" + crypto_id + "', '" + req.body.task.name + "', '" + req.body.task.date + "', '" + req.body.task.type + "', '" + req.body.task.isFinished + "', '" +req.body.task.notes + "')");
+});
+
+
+router.get('/', function(req, res, next) {
   db.serialize(() => {
 
       db.each("SELECT Task_ID as id, Task_Name as name, Date as date, Task_Type as type, Is_Finished as isFinished, Notes as notes FROM Tasks_Table", (err, row) => {
