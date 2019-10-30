@@ -14,9 +14,8 @@ const db = new sqlite3.Database('./db/tasks.db', (err)=>{
   console.log("connected to tasks db");
 });
 
-
-let task;
 let tasksArray = [];
+let task;
 
 // db.run("DROP TABLE IF EXISTS Tasks_Table");
 // db.run(`DELETE FROM Tasks_Table`);
@@ -32,38 +31,36 @@ let seedDB = () => {
 
 // seedDB();
 
-db.serialize(() => {
-db.each("SELECT Task_ID as id, Task_Name as name, Date as date, Task_Type as type, Is_Finished as isFinished, Notes as notes FROM Tasks_Table", (err, row) => {
-      if (err) {
-        console.error(err.message);
-      }
-    //   console.log(row.id + "\t" + row.name);
-      task = {
-          id: row.id,
-          name: row.name, 
-          date: row.date,
-          type: row.type,
-          isFinished: row.isFinished,
-          notes: row.notes,
-      }
-      tasksArray.push(task);
-    });
-  });
+// db.serialize(() => {
+
+//   });
 
 
-console.log(db.run("SELECT Task_Name FROM Tasks_Table"));
-
-db.close((err) => {
-    if (err){
-      console.log(err.message);
-    }
-
-    console.log("closed tasks db connection");
-});
-
+// console.log(db.run("SELECT Task_Name FROM Tasks_Table"));
+// tasksArray = [];
 
 router.get("/", function(req, res, next) {
+  db.serialize(() => {
+
+      db.each("SELECT Task_ID as id, Task_Name as name, Date as date, Task_Type as type, Is_Finished as isFinished, Notes as notes FROM Tasks_Table", (err, row) => {
+        if (err) {
+          console.error(err.message);
+        }
+      //   console.log(row.id + "\t" + row.name);
+        task = {
+            id: row.id,
+            name: row.name, 
+            date: row.date,
+            type: row.type,
+            isFinished: row.isFinished,
+            notes: row.notes,
+        }
+        tasksArray.push(task);
+      });
+    });
+
     res.send(tasksArray);
+    tasksArray=[];
 });
 
 module.exports = router;

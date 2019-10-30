@@ -39,10 +39,25 @@ export default class App extends PureComponent {
     };
   }
 
-  callAPI() {
-    fetch("http://localhost:9000/testAPI")
+  callSeedAPI() {
+    fetch("http://localhost:9000/seedAPI")
         .then(res => res.json())
         .then(res => this.parseResponse(res))
+}
+
+callCreateAPI(newTask) {
+  fetch('http://localhost:9000/create',{
+    method: 'POST',
+    body: JSON.stringify({
+      task: newTask
+    }),
+    headers: {"Content-Type": "application/json"}
+  })
+  .then(function(response){
+    return response.json()
+  }).then(function(body){
+    console.log(body);
+  });
 }
 
 parseResponse(res){
@@ -57,12 +72,23 @@ parseResponse(res){
   })
 }
 
-componentWillMount() {
-  this.callAPI();
+// componentWillMount() {
+//   setTimeout(function() {window.location.reload()}, 1);
+// }
+
+componentDidMount() {
+  // window.location.reload();
+  // setTimeout(function() {window.location.reload()}, 0);
+
+  this.callSeedAPI();
+  this.callSeedAPI();
 }
 
+// componentDidUpdate(){
+//   this.callSeedAPI();
+// }
   // probably should rename this
-  onClick(task) {
+  addTask(task) {
     const taskList = this.state.taskList;
     console.log(task);
     // might want to arrange this as a dictionary
@@ -77,6 +103,7 @@ componentWillMount() {
       taskList: taskList.concat(newTask),
       taskListLength: taskList.length,
     })
+    this.callCreateAPI(newTask);
   }
 
 
@@ -103,7 +130,7 @@ componentWillMount() {
       <div>
         <Header />
         <TaskList action={this.removeItem} value={this.state} />
-        <TaskForm onClick={this.onClick.bind(this)}/>
+        <TaskForm addTask={this.addTask.bind(this)}/>
         {/* <p className="App-intro">{this.state.apiResponse}</p> */}
       </div>
     );
@@ -202,6 +229,15 @@ class TaskForm extends React.Component {
         this.refs.isFinished.value,
         this.refs.notes.value
       ];
-    this.props.onClick(newTask);
+    this.props.addTask(newTask);
   }
 }
+
+
+// if (window.performance) {
+//   if (performance.navigation.type == 1) {
+//     setTimeout(function() {window.location.reload()}, 100);
+//   } else {
+//     alert( "This page is not reloaded");
+//   }
+// }
