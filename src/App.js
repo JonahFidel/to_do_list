@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
-import ReactDOM from "react-dom";
 import Header from "./Header";
+import {default as crypto} from "crypto";
 
 export default class App extends PureComponent {
 
@@ -8,24 +8,38 @@ export default class App extends PureComponent {
     super(props);
     this.removeTask = this.removeTask.bind(this);
     this.state = {
+      // initial state
       taskList: [],
       taskListLength: 0,
     };
   }
 
   // INDEX - task list
-  callGetTaskListAPI() {
+  getTaskList() {
     fetch("http://localhost:9000/task")
       .then(res => res.json())
       .then(res => this.parseResponse(res))
   }
 
   // CREATE - new task
-  callCreateAPI(newTask) {
+  createNewTask(newTask) {
     fetch('http://localhost:9000/task', {
       method: 'POST',
       body: JSON.stringify({
         task: newTask
+      }),
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(function (response) {
+        return response.json()
+      });
+  }
+
+  destroyTask(id) {
+    fetch('http://localhost:9000/task/:id', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        id: id
       }),
       headers: { "Content-Type": "application/json" }
     })
@@ -47,8 +61,8 @@ export default class App extends PureComponent {
 
   componentDidMount() {
     // the double function call is hackish but the only way I can figure out to get the db insertion to persist immediately
-    this.callGetTaskListAPI();
-    this.callGetTaskListAPI();
+    this.getTaskList();
+    this.getTaskList();
   }
 
   // this gets triggered on clicking the submit button on the form, also called to construct the task list
@@ -57,6 +71,8 @@ export default class App extends PureComponent {
 
     // might want to arrange this as a dictionary
     let newTask = {
+      // generate unique id
+      id: crypto.randomBytes(16).toString("hex"),
       name: task[0],
       date: task[1],
       type: task[2],
@@ -67,11 +83,14 @@ export default class App extends PureComponent {
       taskList: taskList.concat(newTask),
       taskListLength: taskList.length,
     })
-    this.callCreateAPI(newTask);
+    this.createNewTask(newTask);
   }
 
   removeTask(i) {
     let taskList = this.state.taskList;
+
+    // remove task from database
+    this.destroyTask(taskList[i].id);
 
     // necessary because splice alters the array in place and we need to keep it immutable bc react
     const newTaskListStart = taskList.slice(0, i);

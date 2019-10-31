@@ -1,8 +1,8 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const crypto = require("crypto");
-const loremIpsum = require("lorem-ipsum").LoremIpsum;
-const db = require("../db");
+const crypto = require('crypto');
+const loremIpsum = require('lorem-ipsum').LoremIpsum;
+const db = require('../db');
 
 const lorem = new loremIpsum();
 
@@ -24,9 +24,15 @@ let seedDB = () => {
 
 // seedDB();
 
+router.delete('/:id', function(req, res, next){
+  console.log(req.body);
+  console.log(req.body.id);
+  db.run("DELETE FROM Tasks_Table WHERE Task_ID = '" + req.body.id + "'");
+  console.log("hit the delete endpoint.");
+});
+
 router.post('/', function(req, res, next) {
-  const crypto_id = crypto.randomBytes(16).toString("hex");
-  db.run("INSERT INTO Tasks_Table (Task_ID, Task_Name, Date, Task_Type, Is_Finished, Notes) VALUES ('" + crypto_id + "', '" + req.body.task.name + "', '" + req.body.task.date + "', '" + req.body.task.type + "', '" + req.body.task.isFinished + "', '" +req.body.task.notes + "')");
+  db.run("INSERT INTO Tasks_Table (Task_ID, Task_Name, Date, Task_Type, Is_Finished, Notes) VALUES ('" + req.body.task._id + "', '" + req.body.task.name + "', '" + req.body.task.date + "', '" + req.body.task.type + "', '" + req.body.task.isFinished + "', '" +req.body.task.notes + "')");
 });
 
 
