@@ -24,18 +24,18 @@ let seedDB = () => {
 
 // seedDB();
 
+// DELETE
 router.delete('/:id', function(req, res, next){
-  console.log(req.body);
-  console.log(req.body.id);
   db.run("DELETE FROM Tasks_Table WHERE Task_ID = '" + req.body.id + "'");
-  console.log("hit the delete endpoint.");
 });
 
+// CREATE
 router.post('/', function(req, res, next) {
   db.run("INSERT INTO Tasks_Table (Task_ID, Task_Name, Date, Task_Type, Is_Finished, Notes) VALUES ('" + req.body.task._id + "', '" + req.body.task.name + "', '" + req.body.task.date + "', '" + req.body.task.type + "', '" + req.body.task.isFinished + "', '" +req.body.task.notes + "')");
 });
 
 
+// INDEX
 router.get('/', function(req, res, next) {
   db.serialize(() => {
 

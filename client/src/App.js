@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import Header from "./Header";
-import {default as crypto} from "crypto";
+import { default as crypto } from "crypto";
+import { ButtonGroup, Button } from "react-bootstrap";
 
 export default class App extends PureComponent {
 
@@ -35,6 +36,7 @@ export default class App extends PureComponent {
       });
   }
 
+  // DELETE - get rid of task
   destroyTask(id) {
     fetch('http://localhost:9000/task/:id', {
       method: 'DELETE',
@@ -48,6 +50,7 @@ export default class App extends PureComponent {
       });
   }
 
+  // construct the task list from the api response
   parseResponse(res) {
     let taskList = [];
     for (var i = 0; i < res.length; i++) {
@@ -60,16 +63,17 @@ export default class App extends PureComponent {
   }
 
   componentDidMount() {
+    // TODO: find a better workaround or solution
     // the double function call is hackish but the only way I can figure out to get the db insertion to persist immediately
     this.getTaskList();
     this.getTaskList();
   }
 
-  // this gets triggered on clicking the submit button on the form, also called to construct the task list
+  // this gets triggered on clicking the submit button on the form; also called to construct the task list
   addTask(task) {
     const taskList = this.state.taskList;
 
-    // might want to arrange this as a dictionary
+    // might want to arrange this as a dictionary later on
     let newTask = {
       // generate unique id
       id: crypto.randomBytes(16).toString("hex"),
@@ -79,10 +83,14 @@ export default class App extends PureComponent {
       isFinished: task[3],
       notes: task[4]
     }
+
+    // add the new task into the state
     this.setState({
       taskList: taskList.concat(newTask),
       taskListLength: taskList.length,
     })
+
+    // API call to insert into DB 
     this.createNewTask(newTask);
   }
 
@@ -92,7 +100,7 @@ export default class App extends PureComponent {
     // remove task from database
     this.destroyTask(taskList[i].id);
 
-    // necessary because splice alters the array in place and we need to keep it immutable bc react
+    // necessary because splice alters the array in place and we need to keep it immutable because React
     const newTaskListStart = taskList.slice(0, i);
     const newTaskListEnd = taskList.slice(i + 1, this.state.taskListLength + 1);
 
@@ -108,8 +116,8 @@ export default class App extends PureComponent {
       <div>
         <Header />
         <TaskList action={this.removeTask} value={this.state} />
+        {/* this should be on a separate page with its own route */}
         <TaskForm addTask={this.addTask.bind(this)} />
-        {/* <p className="App-intro">{this.state.apiResponse}</p> */}
       </div>
     );
   }
@@ -125,6 +133,7 @@ class Task extends React.Component {
         <td>{this.props.isFinished}</td>
         <td>{this.props.notes}</td>
         <td><button onClick={() => this.props.action(this.props.id)}>Remove</button></td>
+        {/* TODO: add the edit route based on item id */}
         <td><button>Edit</button></td>
       </tr>
     );
@@ -138,6 +147,7 @@ class TaskList extends React.Component {
     let taskList = this.props.value.taskList;
 
     for (let i = 0; i < taskList.length; i++) {
+      // pass info as props to the task render function
       items.push(<Task key={i} id={i} action={this.props.action} name={taskList[i].name} date={taskList[i].date} type={taskList[i].type} isFinished={taskList[i].isFinished} notes={taskList[i].notes} />)
     }
     return (
@@ -159,6 +169,25 @@ class TaskList extends React.Component {
 }
 
 class TaskForm extends React.Component {
+  // necessary to deal with the radio buttons
+  constructor() {
+    super();
+
+    this.handleChange = this.handleChange.bind(this);
+
+    this.state = {
+      isFinished: ''
+    };
+  }
+
+  // more radio button code
+  handleChange(event) {
+    this.setState({
+      isFinished: event.target.value
+    });
+  }
+
+
   render() {
     return (
       <div className="container">
@@ -175,19 +204,42 @@ class TaskForm extends React.Component {
             <label htmlFor="taskType">Type of Task</label>
             <input type="text" className="form-control" ref="taskType" placeholder="project"></input>
           </div>
+          
           {/* Need to make this a boolean */}
-          <div className="form-group">
-            <label htmlFor="isFinished">isFinished</label>
-            <input type="boolean" className="form-control" ref="isFinished"></input>
-          </div>
+          {/* radio buttons seem tricky in React */}
+          <p>Finished?</p>
+          <ul>
+          <li>
+            <label>
+              <input
+                type="radio"
+                value="yes"
+
+                checked={this.state.isFinished === "yes"}
+                onChange={this.handleChange}
+              />
+              Yes
+            </label>
+          </li>
+          
+          <li>
+            <label>
+              <input
+                type="radio"
+                value="no"
+                checked={this.state.isFinished === "no"}
+                onChange={this.handleChange}
+              />
+              No
+            </label>
+          </li>
+          </ul>
+          
           <div className="form-group">
             <label htmlFor="notes">Notes</label>
             <textarea type="textarea" className="form-control" ref="notes"></textarea>
-          </div>
-          {/* <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1"></input>
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-          </div> */}
+          </div> 
+          {/* submit the new task and trigger entry into DB */}
           <button className="btn btn-primary" onClick={this.addTaskHelper.bind(this)}>Submit</button>
         </form>
       </div>
@@ -201,9 +253,12 @@ class TaskForm extends React.Component {
         this.refs.nameOfTask.value,
         this.refs.taskDueDate.value,
         this.refs.taskType.value,
-        this.refs.isFinished.value,
+        
+        // stored in the local state bc radio buttons
+        this.state.isFinished,
         this.refs.notes.value
       ];
+
     this.props.addTask(newTask);
   }
 }
