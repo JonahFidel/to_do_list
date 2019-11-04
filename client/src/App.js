@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react";
 import Header from "./Header";
 import { default as crypto } from "crypto";
-import { ButtonGroup, Button } from "react-bootstrap";
 
 export default class App extends PureComponent {
 
@@ -132,9 +131,9 @@ class Task extends React.Component {
         <td>{this.props.type}</td>
         <td>{this.props.isFinished}</td>
         <td>{this.props.notes}</td>
-        <td><button onClick={() => this.props.action(this.props.id)}>Remove</button></td>
+        <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.action(this.props.id)}>Remove</button></td>
         {/* TODO: add the edit route based on item id */}
-        <td><button>Edit</button></td>
+        <td className="no-border"><button type="button" className="btn btn-warning">Edit</button></td>
       </tr>
     );
   }
@@ -153,14 +152,16 @@ class TaskList extends React.Component {
     return (
       // should change this to a React table 
       <table className="table">
-        <tbody>
-          <tr>
+        <thead>
+        <tr>
             <th>Name</th>
             <th>Due Date</th>
             <th>Type</th>
             <th>isFinished</th>
             <th>Notes</th>
           </tr>
+        </thead>
+          <tbody>
           {items}
         </tbody>
       </table>
@@ -187,7 +188,7 @@ class TaskForm extends React.Component {
     });
   }
 
-
+  // TODO: should be using react-bootstrap and not regular react
   render() {
     return (
       <div className="container">
@@ -240,7 +241,7 @@ class TaskForm extends React.Component {
             <textarea type="textarea" className="form-control" ref="notes"></textarea>
           </div> 
           {/* submit the new task and trigger entry into DB */}
-          <button className="btn btn-primary" onClick={this.addTaskHelper.bind(this)}>Submit</button>
+          <button type="button" className="btn btn-primary" onClick={this.addTaskHelper.bind(this)}>Submit</button>
         </form>
       </div>
     );
