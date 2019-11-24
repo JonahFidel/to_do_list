@@ -110,11 +110,18 @@ export default class App extends PureComponent {
     })
   }
 
+  editTask(){
+    // this needs to do the following: 
+      // redirect page to new task/edit page
+      // that page can handle the actual editing
+      // may want to reconsider naming scheme 
+  }
+
   render() {
     return (
       <div>
         <Header />
-        <TaskList action={this.removeTask} value={this.state} />
+        <TaskList edit={this.editTask} remove={this.removeTask} value={this.state} />
         {/* this should be on a separate page with its own route */}
         <TaskForm addTask={this.addTask.bind(this)} />
       </div>
@@ -131,9 +138,9 @@ class Task extends React.Component {
         <td>{this.props.type}</td>
         <td>{this.props.isFinished}</td>
         <td>{this.props.notes}</td>
-        <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.action(this.props.id)}>Remove</button></td>
+        <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.remove(this.props.id)}>Remove</button></td>
         {/* TODO: add the edit route based on item id */}
-        <td className="no-border"><button type="button" className="btn btn-warning">Edit</button></td>
+        <td className="no-border"><button type="button" className="btn btn-warning" onClick={() => this.props.edit(this.props.id)}>Edit</button></td>
       </tr>
     );
   }
@@ -147,7 +154,7 @@ class TaskList extends React.Component {
 
     for (let i = 0; i < taskList.length; i++) {
       // pass info as props to the task render function
-      items.push(<Task key={i} id={i} action={this.props.action} name={taskList[i].name} date={taskList[i].date} type={taskList[i].type} isFinished={taskList[i].isFinished} notes={taskList[i].notes} />)
+      items.push(<Task key={i} id={i} edit={this.props.edit} remove={this.props.remove} name={taskList[i].name} date={taskList[i].date} type={taskList[i].type} isFinished={taskList[i].isFinished} notes={taskList[i].notes} />)
     }
     return (
       // should change this to a React table 
