@@ -124,6 +124,7 @@ export default class App extends PureComponent {
   editTask(i){
     // this needs to do the following: 
       // redirect page to new task/edit page
+      // should probably rename this to navToEditPage() or something similar
       // that page can handle the actual editing
       // may want to reconsider naming scheme 
       let taskList = this.state.taskList;
