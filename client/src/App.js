@@ -7,6 +7,7 @@ export default class App extends PureComponent {
   constructor(props) {
     super(props);
     this.removeTask = this.removeTask.bind(this);
+    this.editTask = this.editTask.bind(this);
     this.state = {
       // initial state
       taskList: [],
@@ -33,6 +34,16 @@ export default class App extends PureComponent {
       .then(function (response) {
         return response.json()
       });
+  }
+
+  // EDIT - edit existing task
+  editTaskCaller(id) {
+    fetch('http://localhost:9000/task/:id', {
+      method: 'GET',
+      headers: { "Content-Type": "application/json" }
+    }).then(function(response){
+      return response.json()
+    });
   }
 
   // DELETE - get rid of task
@@ -110,11 +121,16 @@ export default class App extends PureComponent {
     })
   }
 
-  editTask(){
+  editTask(i){
     // this needs to do the following: 
       // redirect page to new task/edit page
       // that page can handle the actual editing
       // may want to reconsider naming scheme 
+
+      let taskList = this.state.taskList;
+
+      console.log("editTask got called!");
+      this.editTaskCaller(taskList[i].id);
   }
 
   render() {

@@ -24,6 +24,11 @@ let seedDB = () => {
 
 // seedDB();
 
+// EDIT
+router.get('/:id', function(req,res,next){
+  console.log("Hello World it's me");
+});
+
 // DELETE
 router.delete('/:id', function(req, res, next){
   db.run("DELETE FROM Tasks_Table WHERE Task_ID = '" + req.body.id + "'");
