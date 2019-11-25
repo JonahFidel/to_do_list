@@ -126,10 +126,9 @@ export default class App extends PureComponent {
       // redirect page to new task/edit page
       // that page can handle the actual editing
       // may want to reconsider naming scheme 
-
       let taskList = this.state.taskList;
 
-      console.log("editTask got called!");
+      console.log("editTask got called on i = " + i);
       this.editTaskCaller(taskList[i].id);
   }
 
