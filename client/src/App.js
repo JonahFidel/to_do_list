@@ -157,9 +157,13 @@ class Task extends React.Component {
         <td>{this.props.type}</td>
         <td>{this.props.isFinished}</td>
         <td>{this.props.notes}</td>
-        <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.remove(this.props.id)}>Remove</button></td>
+        <Route>
+          <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.remove(this.props.id)}>Remove</button></td>
+        </Route>
         {/* TODO: add the edit route based on item id */}
-        <td className="no-border"><button type="button" className="btn btn-warning" onClick={() => this.props.edit(this.props.id)}>Edit</button></td>
+        <Route>
+          <td className="no-border"><button type="button" className="btn btn-warning" onClick={() => this.props.edit(this.props.id)}>Edit</button></td>
+        </Route>
       </tr>
     );
   }
