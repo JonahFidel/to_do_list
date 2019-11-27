@@ -1,4 +1,5 @@
 import React, { PureComponent } from "react";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from "./Header";
 import { default as crypto } from "crypto";
 
@@ -41,7 +42,7 @@ export default class App extends PureComponent {
     fetch('http://localhost:9000/task/:id', {
       method: 'GET',
       headers: { "Content-Type": "application/json" }
-    }).then(function(response){
+    }).then(function (response) {
       return response.json()
     });
   }
@@ -121,26 +122,28 @@ export default class App extends PureComponent {
     })
   }
 
-  editTask(i){
+  editTask(i) {
     // this needs to do the following: 
-      // redirect page to new task/edit page
-      // should probably rename this to navToEditPage() or something similar
-      // that page can handle the actual editing
-      // may want to reconsider naming scheme 
-      let taskList = this.state.taskList;
+    // redirect page to new task/edit page
+    // should probably rename this to navToEditPage() or something similar
+    // that page can handle the actual editing
+    // may want to reconsider naming scheme 
+    let taskList = this.state.taskList;
 
-      console.log("editTask got called on i = " + i);
-      this.editTaskCaller(taskList[i].id);
+    console.log("editTask got called on i = " + i);
+    this.editTaskCaller(taskList[i].id);
   }
 
   render() {
     return (
-      <div>
-        <Header />
-        <TaskList edit={this.editTask} remove={this.removeTask} value={this.state} />
-        {/* this should be on a separate page with its own route */}
-        <TaskForm addTask={this.addTask.bind(this)} />
-      </div>
+      <Router>
+        <div>
+          <Header />
+          <TaskList edit={this.editTask} remove={this.removeTask} value={this.state} />
+          {/* this should be on a separate page with its own route */}
+          <TaskForm addTask={this.addTask.bind(this)} />
+        </div>
+      </Router>
     );
   }
 }
@@ -176,7 +179,7 @@ class TaskList extends React.Component {
       // should change this to a React table 
       <table className="table">
         <thead>
-        <tr>
+          <tr>
             <th>Name</th>
             <th>Due Date</th>
             <th>Type</th>
@@ -184,7 +187,7 @@ class TaskList extends React.Component {
             <th>Notes</th>
           </tr>
         </thead>
-          <tbody>
+        <tbody>
           {items}
         </tbody>
       </table>
@@ -228,41 +231,41 @@ class TaskForm extends React.Component {
             <label htmlFor="taskType">Type of Task</label>
             <input type="text" className="form-control" ref="taskType" placeholder="project"></input>
           </div>
-          
+
           {/* Need to make this a boolean */}
           {/* radio buttons seem tricky in React */}
           <p>Finished?</p>
           <ul>
-          <li>
-            <label>
-              <input
-                type="radio"
-                value="yes"
+            <li>
+              <label>
+                <input
+                  type="radio"
+                  value="yes"
 
-                checked={this.state.isFinished === "yes"}
-                onChange={this.handleChange}
-              />
-              Yes
+                  checked={this.state.isFinished === "yes"}
+                  onChange={this.handleChange}
+                />
+                Yes
             </label>
-          </li>
-          
-          <li>
-            <label>
-              <input
-                type="radio"
-                value="no"
-                checked={this.state.isFinished === "no"}
-                onChange={this.handleChange}
-              />
-              No
+            </li>
+
+            <li>
+              <label>
+                <input
+                  type="radio"
+                  value="no"
+                  checked={this.state.isFinished === "no"}
+                  onChange={this.handleChange}
+                />
+                No
             </label>
-          </li>
+            </li>
           </ul>
-          
+
           <div className="form-group">
             <label htmlFor="notes">Notes</label>
             <textarea type="textarea" className="form-control" ref="notes"></textarea>
-          </div> 
+          </div>
           {/* submit the new task and trigger entry into DB */}
           <button type="button" className="btn btn-primary" onClick={this.addTaskHelper.bind(this)}>Submit</button>
         </form>
@@ -277,7 +280,7 @@ class TaskForm extends React.Component {
         this.refs.nameOfTask.value,
         this.refs.taskDueDate.value,
         this.refs.taskType.value,
-        
+
         // stored in the local state bc radio buttons
         this.state.isFinished,
         this.refs.notes.value
