@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import Header from "./Header";
 import { default as crypto } from "crypto";
 
@@ -153,20 +153,34 @@ export default class App extends PureComponent {
 class Task extends React.Component {
   render() {
     return (
-      <tr>
-        <td>{this.props.name}</td>
-        <td>{this.props.date}</td>
-        <td>{this.props.type}</td>
-        <td>{this.props.isFinished}</td>
-        <td>{this.props.notes}</td>
-        <Route>
+      <Router>
+        <tr>
+          <td>{this.props.name}</td>
+          <td>{this.props.date}</td>
+          <td>{this.props.type}</td>
+          <td>{this.props.isFinished}</td>
+          <td>{this.props.notes}</td>
           <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.remove(this.props.id)}>Remove</button></td>
-        </Route>
-        {/* TODO: add the edit route based on item id */}
-        <Route>
-          <td className="no-border"><button type="button" className="btn btn-warning" onClick={() => this.props.edit(this.props.id)}>Edit</button></td>
-        </Route>
-      </tr>
+          {/* TODO: add the edit route based on item id */}
+            <td className="no-border">
+              <Link to="/edit">
+                <button type="button" className="btn btn-warning" onClick={() => this.props.edit(this.props.id)}>Edit</button>
+              </Link>
+              <Link to="/other">
+                <button type="button" className="btn btn-secondary" onClick={() => this.props.edit(this.props.id)}>Edit</button>
+              </Link>
+            </td>
+        </tr>
+
+        <Switch>
+          <Route path="/edit">
+            <Edit/>
+          </Route>
+          <Route  path="/other">
+            <Other />
+          </Route>
+        </Switch>
+      </Router>
     );
   }
 }
@@ -294,4 +308,12 @@ class TaskForm extends React.Component {
 
     this.props.addTask(newTask);
   }
+}
+
+function Edit() {
+  return <h2>Edit Page</h2>;
+}
+
+function Other() {
+  return <h2>Other Page</h2>
 }
