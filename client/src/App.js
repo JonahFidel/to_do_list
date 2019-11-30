@@ -139,7 +139,9 @@ export default class App extends PureComponent {
       <Router>
         <div>
           <Header />
-          <TaskList edit={this.editTask} remove={this.removeTask} value={this.state} />
+          <div className="container">
+            <TaskList edit={this.editTask} remove={this.removeTask} value={this.state} />
+          </div>
           {/* this should be on a separate page with its own route */}
           <TaskForm addTask={this.addTask.bind(this)} />
         </div>
