@@ -1,9 +1,9 @@
-import React, { PureComponent } from "react";
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import React, { Component } from "react";
+import { BrowserRouter as Router, Redirect, Route, Switch, Link, withRouter } from 'react-router-dom';
 import Header from "./Header";
 import { default as crypto } from "crypto";
 
-export default class App extends PureComponent {
+export default class App extends Component {
 
   constructor(props) {
     super(props);
@@ -137,14 +137,24 @@ export default class App extends PureComponent {
   render() {
     return (
       <Router>
-        <div>
-          <Header />
-          <div className="container">
-            <TaskList edit={this.editTask} remove={this.removeTask} value={this.state} />
-          </div>
-          {/* this should be on a separate page with its own route */}
-          <TaskForm addTask={this.addTask.bind(this)} />
-        </div>
+        <Switch>
+          <Route exact path="/">
+            <div>
+              <Header />
+              <div className="container">
+                <TaskList edit={this.editTask} remove={this.removeTask} value={this.state} />
+              </div>
+              {/* this should be on a separate page with its own route */}
+              <TaskForm addTask={this.addTask.bind(this)} />
+            </div>
+          </Route>
+          <Route path="/edit" component={Edit}>
+            <Edit />
+          </Route>
+          <Route path="/other" component={Other}>
+            <Other />
+          </Route>
+        </Switch>
       </Router>
     );
   }
@@ -153,34 +163,25 @@ export default class App extends PureComponent {
 class Task extends React.Component {
   render() {
     return (
-      <Router>
-        <tr>
-          <td>{this.props.name}</td>
-          <td>{this.props.date}</td>
-          <td>{this.props.type}</td>
-          <td>{this.props.isFinished}</td>
-          <td>{this.props.notes}</td>
-          <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.remove(this.props.id)}>Remove</button></td>
-          {/* TODO: add the edit route based on item id */}
-            <td className="no-border">
-              <Link to="/edit">
-                <button type="button" className="btn btn-warning" onClick={() => this.props.edit(this.props.id)}>Edit</button>
-              </Link>
-              <Link to="/other">
-                <button type="button" className="btn btn-secondary" onClick={() => this.props.edit(this.props.id)}>Edit</button>
-              </Link>
-            </td>
-        </tr>
-
-        <Switch>
-          <Route path="/edit">
-            <Edit/>
-          </Route>
-          <Route  path="/other">
-            <Other />
-          </Route>
-        </Switch>
-      </Router>
+      <tr>
+        <td>{this.props.name}</td>
+        <td>{this.props.date}</td>
+        <td>{this.props.type}</td>
+        <td>{this.props.isFinished}</td>
+        <td>{this.props.notes}</td>
+        <td className="no-border"><button type="button" className="btn btn-danger" onClick={() => this.props.remove(this.props.id)}>Remove</button></td>
+        {/* TODO: add the edit route based on item id */}
+        <td className="no-border">
+          <Link to="/edit">
+            <button type="button" className="btn btn-warning" onClick={() => this.props.edit(this.props.id)}>Edit</button>
+          </Link>
+        </td>
+        <td className="no-border">
+          <Link to="/other">
+            <button type="button" className="btn btn-secondary" onClick={() => this.props.edit(this.props.id)}>Other</button>
+          </Link>
+        </td>
+      </tr>
     );
   }
 }
@@ -309,11 +310,12 @@ class TaskForm extends React.Component {
     this.props.addTask(newTask);
   }
 }
-
 function Edit() {
-  return <h2>Edit Page</h2>;
+  console.log("Edit function called");
+  return <h1>Edit Page</h1>;
 }
 
 function Other() {
-  return <h2>Other Page</h2>
+  console.log("other function called");
+  return <h1>Other Page</h1>;
 }
