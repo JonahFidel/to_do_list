@@ -3,8 +3,6 @@
 const sqlite3 = require("sqlite3").verbose();
 let db;
 
-console.log('hello world')
-
 function connectDatabase() {
     if (!db) {
         db = new sqlite3.Database('./db/tasks.db', (err) => {
