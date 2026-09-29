@@ -18,14 +18,14 @@ export default class App extends Component {
 
   // INDEX - task list
   getTaskList() {
-    fetch("http://localhost:9000/task")
+    fetch("/task")
       .then(res => res.json())
       .then(res => this.parseResponse(res))
   }
 
   // CREATE - new task
   createNewTask(newTask) {
-    fetch('http://localhost:9000/task', {
+    fetch('/task', {
       method: 'POST',
       body: JSON.stringify({
         task: newTask
@@ -39,7 +39,7 @@ export default class App extends Component {
 
   // EDIT - edit existing task
   editTaskCaller(id) {
-    fetch('http://localhost:9000/task/:id', {
+    fetch('/task/:id', {
       method: 'GET',
       headers: { "Content-Type": "application/json" }
     }).then(function (response) {
@@ -49,7 +49,7 @@ export default class App extends Component {
 
   // DELETE - get rid of task
   destroyTask(id) {
-    fetch('http://localhost:9000/task/:id', {
+    fetch('/task/:id', {
       method: 'DELETE',
       body: JSON.stringify({
         id: id
