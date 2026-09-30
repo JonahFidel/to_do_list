@@ -6,9 +6,6 @@ const db = require('../db');
 
 const lorem = new loremIpsum();
 
-let tasksArray = [];
-let task;
-
 // uncomment to clear the table
 // db.run("DROP TABLE IF EXISTS Tasks_Table");
 // db.run("DELETE FROM Tasks_Table");
@@ -31,42 +28,54 @@ router.get('/:id', function(req,res,next){
 
 // DELETE
 router.delete('/:id', function(req, res, next){
-  db.run("DELETE FROM Tasks_Table WHERE Task_ID = '" + req.body.id + "'");
+  db.run("DELETE FROM Tasks_Table WHERE Task_ID = '" + req.body.id + "'", function (err) {
+    if (err) {
+      console.error(err.message);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ ok: true });
+  });
 });
 
 // CREATE
 router.post('/', function(req, res, next) {
-  db.run("INSERT INTO Tasks_Table (Task_ID, Task_Name, Date, Task_Type, Is_Finished, Notes) VALUES ('" + req.body.task.id + "', '" + req.body.task.name + "', '" + req.body.task.date + "', '" + req.body.task.type + "', '" + req.body.task.isFinished + "', '" +req.body.task.notes + "')");
+  db.run("INSERT INTO Tasks_Table (Task_ID, Task_Name, Date, Task_Type, Is_Finished, Notes) VALUES ('" + req.body.task.id + "', '" + req.body.task.name + "', '" + req.body.task.date + "', '" + req.body.task.type + "', '" + req.body.task.isFinished + "', '" +req.body.task.notes + "')", function (err) {
+    if (err) {
+      console.error(err.message);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.status(201).json({ ok: true });
+  });
 });
 
 
 // INDEX
 router.get('/', function(req, res, next) {
-  db.serialize(() => {
+  const tasks = [];
+  db.each("SELECT Task_ID as id, Task_Name as name, Date as date, Task_Type as type, Is_Finished as isFinished, Notes as notes FROM Tasks_Table", (err, row) => {
+    if (err) {
+      console.error(err.message);
+      return;
+    }
 
-      db.each("SELECT Task_ID as id, Task_Name as name, Date as date, Task_Type as type, Is_Finished as isFinished, Notes as notes FROM Tasks_Table", (err, row) => {
-        if (err) {
-          console.error(err.message);
-        }
-        
-        // create task object
-        task = {
-            id: row.id,
-            name: row.name, 
-            date: row.date,
-            type: row.type,
-            isFinished: row.isFinished,
-            notes: row.notes,
-        }
-        // send tasks to the client
-        tasksArray.push(task);
-      });
+    tasks.push({
+      id: row.id,
+      name: row.name,
+      date: row.date,
+      type: row.type,
+      isFinished: row.isFinished,
+      notes: row.notes,
     });
-
-    res.send(tasksArray);
-
-    // clear the tasks array
-    tasksArray=[];
+  }, (err) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(tasks);
+  });
 });
 
 module.exports = router;

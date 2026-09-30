@@ -25,6 +25,20 @@ app.use(bodyParser.json());
 
 app.use('/task', taskRouter);
 
+// The React app and the task API share this origin so one public URL is enough.
+var clientBuildPath = path.join(__dirname, 'client', 'build');
+app.use(express.static(clientBuildPath));
+app.use(function (req, res, next) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return next();
+  }
+  res.sendFile(path.join(clientBuildPath, 'index.html'), function (err) {
+    if (err) {
+      next();
+    }
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
