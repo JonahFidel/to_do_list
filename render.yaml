@@ -2,7 +2,7 @@ services:
   - type: web
     name: jonahfidel-to-do-list
     runtime: node
-    plan: 0.5c-512mb
+    plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
     healthCheckPath: /
@@ -11,7 +11,3 @@ services:
         value: 22.22.0
       - key: NODE_ENV
         value: production
-    disk:
-      name: todo-data
-      mountPath: /opt/render/project/src/db
-      sizeGB: 1
